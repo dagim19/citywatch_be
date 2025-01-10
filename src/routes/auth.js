@@ -49,13 +49,12 @@ router.post('/signup', async (req, res) => {
 // Login Route
 router.post('/login', async (req, res) => {
   try {
-    console.log(req.body);
     const { phoneNumber, password } = req.body;
     const phone = phoneNumber;
 
     // Find user by phone
     const user = await User.findOne({ phone });
-    console.log('User: ', user);
+    
     if (!user) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
