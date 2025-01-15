@@ -54,9 +54,24 @@ router.get(
   async(req,res)=>{
     try{
       const unresolvedReports = await Report.find({ status: 'pending', resolved: false })
-      .sort({ createdAt: -1 });      
+      .sort({ createdAt: 1 });      
 
       res.status(200).json(unresolvedReports);
+    }
+    catch(err){
+      console.error(err.message);
+      res.status(500).json({ msg: "Server Error", error: err.message });
+    }
+  }
+);
+router.get(
+  "/verifier", auth,
+  async(req,res)=>{
+    try{
+      const pendingReports = await Report.find({ status: 'pending'})
+      .sort({ createdAt: 1 });      
+
+      res.status(200).json(pendingReports);
     }
     catch(err){
       console.error(err.message);
