@@ -34,7 +34,7 @@ router.post("/", auth, upload.array("images", 5), async (req, res) => {
       duration,
       description,
       metadata: JSON.parse(metadata),
-      images: imageUrls,
+      images: imageUrls
     });
 
     console.log(report);
@@ -43,11 +43,12 @@ router.post("/", auth, upload.array("images", 5), async (req, res) => {
     res.status(500).json({ msg: "Server Error", error: err.message });
   }
 });
+
 router.get("/", auth, async (req, res) => {
   try {
     const unresolvedReports = await Report.find({
-      status: "pending",
-      resolved: false,
+      status: "verified",
+      resolved: false
     }).sort({ createdAt: 1 });
 
     res.status(200).json(unresolvedReports);
@@ -56,6 +57,56 @@ router.get("/", auth, async (req, res) => {
     res.status(500).json({ msg: "Server Error", error: err.message });
   }
 });
+
+///////////////////////////////////////////////////////////
+router.get("/power", auth, async (req, res) => {
+  try {
+    const unresolvedReports = await Report.find({
+      status: "verified",
+      resolved: false,
+      category:0
+    }).sort({ createdAt: 1 });
+
+    res.status(200).json(unresolvedReports);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ msg: "Server Error", error: err.message });
+  }
+});
+
+///////////////////////////////////////////////////////////
+router.get("/water", auth, async (req, res) => {
+  try {
+    const unresolvedReports = await Report.find({
+      status: "verified",
+      resolved: false,
+      category:1
+    }).sort({ createdAt: 1 });
+
+    res.status(200).json(unresolvedReports);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ msg: "Server Error", error: err.message });
+  }
+});
+
+///////////////////////////////////////////////////////////
+router.get("/road", auth, async (req, res) => {
+  try {
+    const unresolvedReports = await Report.find({
+      status: "verified",
+      resolved: false,
+      category:2
+    }).sort({ createdAt: 1 });
+
+    res.status(200).json(unresolvedReports);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ msg: "Server Error", error: err.message });
+  }
+});
+
+///////////////////////////////////////////////////////////
 
 router.get("/verifier", auth, async (req, res) => {
   try {

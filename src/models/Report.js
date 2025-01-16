@@ -11,7 +11,7 @@ const ReportSchema = new mongoose.Schema({
         required: true
     },
     category: {
-        type: String,
+        type: int,
         required: true
     },
     images: {
