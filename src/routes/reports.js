@@ -74,7 +74,6 @@ router.get("/power", auth, async (req, res) => {
   }
 });
 
-///////////////////////////////////////////////////////////
 router.get("/water", auth, async (req, res) => {
   try {
     const unresolvedReports = await Report.find({
@@ -90,7 +89,6 @@ router.get("/water", auth, async (req, res) => {
   }
 });
 
-///////////////////////////////////////////////////////////
 router.get("/road", auth, async (req, res) => {
   try {
     const unresolvedReports = await Report.find({
@@ -106,7 +104,6 @@ router.get("/road", auth, async (req, res) => {
   }
 });
 
-///////////////////////////////////////////////////////////
 
 router.get("/verifier", auth, async (req, res) => {
   try {
