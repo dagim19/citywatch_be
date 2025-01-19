@@ -25,6 +25,9 @@ const ReportSchema = new mongoose.Schema({
         type: Date,
         required: true
     },
+    assignedTo: {
+        type: mongoose.Schema.Types.ObjectId
+    },
     report_count: {
         type: Number,
         default: 1
@@ -56,7 +59,7 @@ const ReportSchema = new mongoose.Schema({
     metadata: {
         type: Object,
         required: true
-    }
+    } // contains location data
     // Add more fields as needed
 });
  module.exports = mongoose.model('Report', ReportSchema);

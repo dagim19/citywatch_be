@@ -7,17 +7,6 @@ const User = require("../models/User"); // Assuming you have a User model
 const router = express.Router();
 const upload = require("../config/storage");
 
-const isValidLocation = (location) => {
-  const { lat, lng } = location;
-  return (
-    typeof lat === "number" &&
-    typeof lng === "number" &&
-    lat >= -90 &&
-    lat <= 90 &&
-    lng >= -180 &&
-    lng <= 180
-  );
-};
 
 router.post("/", auth, upload.array("images", 5), async (req, res) => {
   try {
@@ -58,7 +47,7 @@ router.get("/", auth, async (req, res) => {
   }
 });
 
-///////////////////////////////////////////////////////////
+
 router.get("/power", auth, async (req, res) => {
   try {
     const unresolvedReports = await Report.find({
@@ -105,8 +94,21 @@ router.get("/road", auth, async (req, res) => {
 });
 
 
-router.get("/verifier", auth, async (req, res) => {
+router.get("/admin/:user_id", auth, async (req, res) => {
   try {
+    const {user}=req.body;
+    const{report_id}=req.body;
+    const searchedReport = await Report.findById(report_id);
+    res.status(200).json(searchedReport);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ msg: "Server Error", error: err.message });
+  }
+});
+router.get("/verifier/:user_id", auth, async (req, res) => {
+  try {
+    const {user}=req.body;
+    
     const pendingReports = await Report.findOne({ status: "pending" }).sort({
       createdAt: 1,
     });
@@ -117,7 +119,7 @@ router.get("/verifier", auth, async (req, res) => {
     res.status(500).json({ msg: "Server Error", error: err.message });
   }
 });
-router.patch("/verifier", auth, async (req, res) => {
+router.patch("/verifier/report_Id", auth, async (req, res) => {
   try {
     const { reportId } = req.params;
     const { user } = req.body;
@@ -134,7 +136,7 @@ router.patch("/verifier", auth, async (req, res) => {
     }
 
     report.status = "verified";
-    report.verifiedBy = user.phone;
+    report.verifiedBy = user.user_id;
     report.verified_at = new Date();
 
     await report.save();
@@ -145,5 +147,6 @@ router.patch("/verifier", auth, async (req, res) => {
     res.status(500).json({ msg: "Server Error", error: err.message });
   }
 });
+
 
 module.exports = router;
