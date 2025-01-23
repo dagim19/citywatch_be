@@ -11,8 +11,7 @@ const auth = async (req, res, next) => {
     }
 
     const token = authHeader.replace('Bearer ', '');
-    console.log('Middleware token: ', token);
-
+    
     if (!token) {
       return res.status(401).json({ message: 'No token, authorization denied' });
     }
@@ -32,7 +31,6 @@ const auth = async (req, res, next) => {
       }
     }
 
-    console.log('Middleware decoded: ', decoded);
 
     // 3. Find the user based on the decoded token's ID
     const user = await User.findById(decoded.userId);

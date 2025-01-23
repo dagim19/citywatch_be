@@ -49,12 +49,11 @@ router.post('/signup', async (req, res) => {
 // Login Route
 router.post('/login', async (req, res) => {
   try {
-    const { phoneNumber, password } = req.body;
-    const phone = phoneNumber;
+    const { phone, password } = req.body;
 
     // Find user by phone
     const user = await User.findOne({ phone });
-    
+
     if (!user) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
@@ -70,7 +69,6 @@ router.post('/login', async (req, res) => {
 
     // Generate JWT
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-
     res.status(200).json({ token });
   } catch (error) {
     console.error(error);

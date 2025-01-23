@@ -6,7 +6,7 @@ const userSchema = new mongoose.Schema({
   fatherName: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   phone: { type: String, required: true, unique: true },
-  subCity: { type: String, required: true },
+  subcity: { type: String, required: true },
   role: { type: String, default: 'user' },
   password: { type: String, required: true }, // Store hashed passwords
   // Add other fields as needed (e.g., date of birth, address, etc.)

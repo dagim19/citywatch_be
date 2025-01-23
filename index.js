@@ -19,6 +19,12 @@ require('dotenv').config();
 connectDB();
 
 // Init Middleware
+// app.use(cors({
+//     origin: '*',
+//     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow these HTTP methods
+//     credentials: true, // Allow cookies and credentials (if needed)
+// }));
+
 app.use(cors({
     origin: '*',
 }));
@@ -33,7 +39,7 @@ app.use('/api/about', aboutRoutes);
 // app.use('/api/messages', messagesRoutes);
 // set port 
 const PORT = process.env.PORT || 5000;
-const IP = '192.168.1.4';
+const IP = '192.168.1.7';
 // app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server is running on http://${IP}:5000`);
