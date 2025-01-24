@@ -19,12 +19,15 @@ require('dotenv').config();
 connectDB();
 
 // Init Middleware
+<<<<<<< HEAD
 // app.use(cors({
 //     origin: '*',
 //     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow these HTTP methods
 //     credentials: true, // Allow cookies and credentials (if needed)
 // }));
 
+=======
+>>>>>>> origin/still-untested
 app.use(cors({
     origin: '*',
 }));
@@ -37,6 +40,7 @@ app.use('/api/reports', reportsRoutes);
 app.use('/api/about', aboutRoutes);
 // app.use('/api/announcements', announcementsRoutes);
 // app.use('/api/messages', messagesRoutes);
+<<<<<<< HEAD
 
 app.use((req, res, next) => {
     res.status(404).json({
@@ -50,6 +54,11 @@ app.use((req, res, next) => {
 // set port 
 const PORT = process.env.PORT || 5000;
 const IP = '192.168.1.7';
+=======
+// set port 
+const PORT = process.env.PORT || 5000;
+const IP = '192.168.1.4';
+>>>>>>> origin/still-untested
 // app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server is running on http://${IP}:5000`);

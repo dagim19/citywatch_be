@@ -1,15 +1,11 @@
 const express = require("express");
 const multer = require("multer");
 const auth = require("../middleware/auth"); // Assuming you have an auth middleware
-const {multipleUploadMiddleware} = require("../middleware/handleUpload")
+const { multipleUploadMiddleware } = require("../middleware/handleUpload");
 const Report = require("../models/Report"); // Assuming you have a Report model
 const User = require("../models/User"); // Assuming you have a User model
-const Comment = require("../models/Comment");
 const router = express.Router();
 const upload = require("../config/storage");
-const mongoose = require('mongoose');
-const { ObjectId } = mongoose.Types;
-
 
 router.post(
   "/",
@@ -63,16 +59,145 @@ router.post(
 );
 
 
-router.get('/', auth, async(req, res) => {
+router.get("/", auth, async (req, res) => {
   try {
-    const reports = await Report.find({});
+    const unresolvedReports = await Report.find({
+      status: "verified",
+      resolved: false,
+    }).sort({ createdAt: 1 });
 
-    res.status(200).json(reports);
-  }catch(error) {
-    console.error(error.message);
-    res.status(500).send('Server Error');
+    res.status(200).json(unresolvedReports);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ msg: "Server Error", error: err.message });
   }
-})
+});
+
+router.get("/power", auth, async (req, res) => {
+  try {
+    const unresolvedReports = await Report.find({
+      status: "verified",
+      resolved: false,
+      category: 0,
+    }).sort({ createdAt: 1 });
+
+    res.status(200).json(unresolvedReports);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ msg: "Server Error", error: err.message });
+  }
+});
+
+router.get("/water", auth, async (req, res) => {
+  try {
+    const unresolvedReports = await Report.find({
+      status: "verified",
+      resolved: false,
+      category: 1,
+    }).sort({ createdAt: 1 });
+
+    res.status(200).json(unresolvedReports);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ msg: "Server Error", error: err.message });
+  }
+});
+
+router.get("/road", auth, async (req, res) => {
+  try {
+    const unresolvedReports = await Report.find({
+      status: "verified",
+      resolved: false,
+      category: 2,
+    }).sort({ createdAt: 1 });
+
+    res.status(200).json(unresolvedReports);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ msg: "Server Error", error: err.message });
+  }
+});
+
+router.get("/admin/:user_id", auth, async (req, res) => {
+  try {
+    const { user } = req.body;
+    const { report_id } = req.body;
+    const searchedReport = await Report.findById(report_id);
+    res.status(200).json(searchedReport);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ msg: "Server Error", error: err.message });
+  }
+});
+router.get("/verifier/:user_id", auth, async (req, res) => {
+  try {
+    const { user } = req.body;
+
+    const pendingReports = await Report.findOne({ status: "pending" }).sort({
+      createdAt: 1,
+    });
+
+    res.status(200).json(pendingReports);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ msg: "Server Error", error: err.message });
+  }
+});
+router.patch("/verifier/report_Id", auth, async (req, res) => {
+  try {
+    const { reportId } = req.params;
+    const { user } = req.body;
+
+    if (!user || !user.phone) {
+      return res
+        .status(400)
+        .json({ msg: "User object with a phone number is required" });
+    }
+
+    const report = await Report.findById(reportId);
+    if (!report) {
+      return res.status(404).json({ msg: "Report not found" });
+    }
+
+    report.status = "verified";
+    report.verifiedBy = user.user_id;
+    report.verified_at = new Date();
+
+    await report.save();
+
+    res.status(200).json({ msg: "Report updated successfully", report });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ msg: "Server Error", error: err.message });
+  }
+});
+// assigning to maintenance
+router.patch("/maintenance/assign/report_id", auth, async (req, res) => {
+  try {
+    const report = await Report.findById(reportId);
+    if (!report) {
+      throw new Error("Report not found");
+    }
+
+    const availableUser = await User.findOne({
+      subCity: report.subcity,
+      maintainerAvailable: true,
+    });
+
+    if (!availableUser) {
+      throw new Error("No maintenance worker available");
+    }
+
+    report.assignedTo = availableUser._id;
+    await report.save();
+
+    console.log(`Report assigned to user: ${availableUser.name}`);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ msg: "Server Error", error: err.message });
+  }
+});
+
 
 router.get('/my', auth, async (req, res) => {
   try {
@@ -146,5 +271,3 @@ router.post('/:id/comment', auth, async (req, res) => {
 });
 
 
-
-module.exports = router;

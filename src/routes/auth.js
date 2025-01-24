@@ -8,10 +8,10 @@ const jwt = require('jsonwebtoken');
 router.post('/signup', async (req, res) => {
   try {
     console.log(req.body);
-    const { name, fatherName, email, phone, password, subCity } = req.body;
+    const { name, fatherName, email, phone, password, subcity } = req.body;
 
     // Simple validation (add more as needed)
-    if (!name || !email || !phone || !subCity || !password) {
+    if (!name || !email || !phone || !subcity || !password) {
       return res.status(400).json({ message: 'Please fill all required fields' });
     }
 
