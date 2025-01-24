@@ -19,11 +19,9 @@ const ReportSchema = new mongoose.Schema({
   },
   verifiedBy: {
     type: mongoose.Schema.Types.ObjectId,
-    required: true,
   },
   verified_at: {
     type: Date,
-    required: true,
   },
   assignedTo: {
     type: mongoose.Schema.Types.ObjectId,
@@ -59,7 +57,7 @@ const ReportSchema = new mongoose.Schema({
   resolved: {
     type: String,
     enum: ["waiting", "inProgress", "attempted", "resolved"],
-    default: "false",
+    default: "waiting",
   },
   metadata: {
     type: Object,
