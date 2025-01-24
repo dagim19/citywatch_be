@@ -4,6 +4,7 @@ const express = require('express');
 const connectDB = require('./src/config/database');
 const authRoutes = require('./src/routes/auth');
 const reportsRoutes = require('./src/routes/reports');
+const announcementsRoutes = require('./src/routes/announcements');
 const aboutRoutes = require('./src/routes/about');
 const auhMiddleware = require('./src/middleware/auth');
 // const announcementsRoutes = require('./src/routes/announcements');
@@ -35,7 +36,7 @@ app.use(express.json({ extended: false }));
 app.use('/api/auth', authRoutes);
 app.use('/api/reports', reportsRoutes);
 app.use('/api/about', aboutRoutes);
-// app.use('/api/announcements', announcementsRoutes);
+app.use('/api/announcements', announcementsRoutes);
 // app.use('/api/messages', messagesRoutes);
 
 app.use((req, res, next) => {

@@ -61,15 +61,14 @@ router.post(
 
 router.get("/", auth, async (req, res) => {
   try {
-    const unresolvedReports = await Report.find({
-      status: "verified",
-      resolved: false,
-    }).sort({ createdAt: 1 });
-
-    res.status(200).json(unresolvedReports);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).json({ msg: "Server Error", error: err.message });
+    // Get reports for the currently authenticated user
+    const reports = await Report.find({ subcity: req.user.subcity })
+                                .sort({ createdAt: -1 });
+                                console.log('Reports: ', reports);
+    res.status(200).json(reports);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send('Server Error');
   }
 });
 
