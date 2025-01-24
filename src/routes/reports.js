@@ -7,7 +7,6 @@ const User = require("../models/User"); // Assuming you have a User model
 const router = express.Router();
 const upload = require("../config/storage");
 
-
 router.post("/", auth, upload.array("images", 5), async (req, res) => {
   try {
     const { category, duration, description, metadata } = req.body;
@@ -23,7 +22,7 @@ router.post("/", auth, upload.array("images", 5), async (req, res) => {
       duration,
       description,
       metadata: JSON.parse(metadata),
-      images: imageUrls
+      images: imageUrls,
     });
 
     console.log(report);
@@ -37,7 +36,7 @@ router.get("/", auth, async (req, res) => {
   try {
     const unresolvedReports = await Report.find({
       status: "verified",
-      resolved: false
+      resolved: false,
     }).sort({ createdAt: 1 });
 
     res.status(200).json(unresolvedReports);
@@ -47,13 +46,12 @@ router.get("/", auth, async (req, res) => {
   }
 });
 
-
 router.get("/power", auth, async (req, res) => {
   try {
     const unresolvedReports = await Report.find({
       status: "verified",
       resolved: false,
-      category:0
+      category: 0,
     }).sort({ createdAt: 1 });
 
     res.status(200).json(unresolvedReports);
@@ -68,7 +66,7 @@ router.get("/water", auth, async (req, res) => {
     const unresolvedReports = await Report.find({
       status: "verified",
       resolved: false,
-      category:1
+      category: 1,
     }).sort({ createdAt: 1 });
 
     res.status(200).json(unresolvedReports);
@@ -83,7 +81,7 @@ router.get("/road", auth, async (req, res) => {
     const unresolvedReports = await Report.find({
       status: "verified",
       resolved: false,
-      category:2
+      category: 2,
     }).sort({ createdAt: 1 });
 
     res.status(200).json(unresolvedReports);
@@ -93,11 +91,10 @@ router.get("/road", auth, async (req, res) => {
   }
 });
 
-
 router.get("/admin/:user_id", auth, async (req, res) => {
   try {
-    const {user}=req.body;
-    const{report_id}=req.body;
+    const { user } = req.body;
+    const { report_id } = req.body;
     const searchedReport = await Report.findById(report_id);
     res.status(200).json(searchedReport);
   } catch (err) {
@@ -107,8 +104,8 @@ router.get("/admin/:user_id", auth, async (req, res) => {
 });
 router.get("/verifier/:user_id", auth, async (req, res) => {
   try {
-    const {user}=req.body;
-    
+    const { user } = req.body;
+
     const pendingReports = await Report.findOne({ status: "pending" }).sort({
       createdAt: 1,
     });
@@ -147,6 +144,31 @@ router.patch("/verifier/report_Id", auth, async (req, res) => {
     res.status(500).json({ msg: "Server Error", error: err.message });
   }
 });
+// assigning to maintenance
+router.patch("/maintenance/assign/report_id", auth, async (req, res) => {
+  try {
+    const report = await Report.findById(reportId);
+    if (!report) {
+      throw new Error("Report not found");
+    }
 
+    const availableUser = await User.findOne({
+      subCity: report.subcity,
+      maintainerAvailable: true,
+    });
+
+    if (!availableUser) {
+      throw new Error("No maintenance worker available");
+    }
+
+    report.assignedTo = availableUser._id;
+    await report.save();
+
+    console.log(`Report assigned to user: ${availableUser.name}`);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ msg: "Server Error", error: err.message });
+  }
+});
 
 module.exports = router;

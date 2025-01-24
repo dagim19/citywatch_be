@@ -11,7 +11,9 @@ const userSchema = new mongoose.Schema(
     role: { type: String, default: "user" },
     password: { type: String, required: true }, // Store hashed passwords
     institution: { type: String, required: false },
-    currentLocation:{type:Object, required: false} //we'll use this to check which verifier is closest to the reported issue
+    currentLocation:{type:Object, required: false},
+    maintainerAvailable:{type:Bool, required: false}
+    //we'll use this to check which verifier is closest to the reported issue
     // Add other fields as needed (e.g., date of birth, address, etc.)
   },
   { timestamps: true }
