@@ -37,6 +37,16 @@ app.use('/api/reports', reportsRoutes);
 app.use('/api/about', aboutRoutes);
 // app.use('/api/announcements', announcementsRoutes);
 // app.use('/api/messages', messagesRoutes);
+
+app.use((req, res, next) => {
+    res.status(404).json({
+        message: "404 - Not Found",
+        error: "The requested resource could not be found on this server."
+    });
+});
+
+
+
 // set port 
 const PORT = process.env.PORT || 5000;
 const IP = '192.168.1.7';

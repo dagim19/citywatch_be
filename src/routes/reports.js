@@ -74,6 +74,18 @@ router.get('/', auth, async(req, res) => {
   }
 })
 
+router.get('/my', auth, async (req, res) => {
+  try {
+    // Get reports for the currently authenticated user
+    const reports = await Report.find({ user_id: req.user.id })
+                                .sort({ createdAt: -1 });
+                                console.log('Reports: ', reports);
+    res.status(200).json(reports);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send('Server Error');
+  }
+});
 
 router.get('/:id', auth, async (req, res) => {
   try {
@@ -133,22 +145,6 @@ router.post('/:id/comment', auth, async (req, res) => {
   }
 });
 
-router.get('/my', auth, async (req, res) => {
-  try {
-    // 1. Get the user ID from the request object (provided by the 'auth' middleware)
-    const userId = req.user.id;
 
-    // 2. Find all reports where the user_id matches the logged-in user's ID
-    const reports = await Report.find({ user_id: userId }).sort({ createdAt: -1 }); // Sort by creation date, newest first
-
-    // 3. Send the reports back to the client
-    console.log('Reports: ', reports);
-    res.status(200).json(reports);
-  } catch (error) {
-    // 4. Handle errors
-    console.error(error.message);
-    res.status(500).send('Server Error');
-  }
-});
 
 module.exports = router;
