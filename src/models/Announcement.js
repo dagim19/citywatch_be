@@ -7,7 +7,7 @@ const AnnouncementSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     required: true,
   },
-  subCity: {
+  subcity: {
     type: String,
     required: true,
   },
