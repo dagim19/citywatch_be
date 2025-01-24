@@ -26,7 +26,6 @@ router.post('/signup', async (req, res) => {
       return res.status(400).json({ message: 'phone number already exists' });
     }
 
- 
     // Create a new user
     const user = new User({
       name,
@@ -34,7 +33,7 @@ router.post('/signup', async (req, res) => {
       email,
       phone,
       password,
-      subCity,
+      subcity, // Use lowercase consistently
     });
 
     await user.save();
@@ -58,10 +57,9 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-
     // Compare password
     const isMatch = await bcrypt.compare(password, user.password);
-  
+
     if (!isMatch) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
