@@ -196,7 +196,20 @@ router.patch("/maintenance/assign/report_id", auth, async (req, res) => {
     res.status(500).json({ msg: "Server Error", error: err.message });
   }
 });
-
+router.get('/around', auth, async (req, res) => {
+  try {
+    // Get reports for the currently authenticated user
+    const reports = await Report.find({ subcity: req.user.subcity ,
+      user_id: { $ne: req.user.id }
+    })
+                                .sort({ createdAt: -1 });
+                                console.log('Reports: ', reports);
+    res.status(200).json(reports);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send('Server Error');
+  }
+});
 
 router.get('/my', auth, async (req, res) => {
   try {
