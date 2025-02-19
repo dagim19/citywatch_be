@@ -34,7 +34,7 @@ router.post('/signup', async (req, res) => {
       email,
       phone,
       password,
-      subCity,
+      subcity,
     });
 
     await user.save();
