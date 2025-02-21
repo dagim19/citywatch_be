@@ -12,7 +12,10 @@ const userSchema = new mongoose.Schema(
     password: { type: String, required: true }, // Store hashed passwords
     institution: { type: String, required: false },
     currentLocation:{type:Object, required: false},
-    maintainerAvailable:{type:Boolean, required: false}
+    maintainerAvailable:{type:Boolean, required: false},
+    resetOtp: { type: Number, default: null },
+  resetOtpExpiry: { type: Date, default: null },
+  resetOtpVerified: { type: Boolean, default: false },
     //we'll use this to check which verifier is closest to the reported issue
     // Add other fields as needed (e.g., date of birth, address, etc.)
   },
