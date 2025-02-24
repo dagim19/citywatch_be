@@ -91,10 +91,10 @@ router.get("/road", auth, async (req, res) => {
   }
 });
 
-router.get("/admin/:user_id", auth, async (req, res) => {
+router.get("/admin/getReport/:report_id", auth, async (req, res) => {
+  // used to fetch the specific report when the report gets clicked from the admin dashboard containing all reports
   try {
     const { user } = req.body;
-    const { report_id } = req.body;
     const searchedReport = await Report.findById(report_id);
     res.status(200).json(searchedReport);
   } catch (err) {
@@ -102,7 +102,7 @@ router.get("/admin/:user_id", auth, async (req, res) => {
     res.status(500).json({ msg: "Server Error", error: err.message });
   }
 });
-router.get("/verifier/:user_id", auth, async (req, res) => {
+router.get("/verifier/getPending", auth, async (req, res) => {
   try {
     const { user } = req.body;
 
@@ -116,7 +116,8 @@ router.get("/verifier/:user_id", auth, async (req, res) => {
     res.status(500).json({ msg: "Server Error", error: err.message });
   }
 });
-router.patch("/verifier/report_Id", auth, async (req, res) => {
+router.patch("/verifier/verify/:report_Id", auth, async (req, res) => {
+  // verifying report
   try {
     const { reportId } = req.params;
     const { user } = req.body;
@@ -145,8 +146,9 @@ router.patch("/verifier/report_Id", auth, async (req, res) => {
   }
 });
 // assigning to maintenance
-router.patch("/maintenance/assign/report_id", auth, async (req, res) => {
+router.patch("/maintenance/assign/:report_Id", auth, async (req, res) => {
   try {
+    const { reportId } = req.params;
     const report = await Report.findById(reportId);
     if (!report) {
       throw new Error("Report not found");
@@ -171,4 +173,109 @@ router.patch("/maintenance/assign/report_id", auth, async (req, res) => {
   }
 });
 
+router.patch(
+  "/reports/:report_id/attempted",
+  auth,
+  async (req, res) => {
+    try {
+      const report = await Report.findOne({
+        _id: req.params.report_id,
+        assignedTo: req.user.id, // Ensure report is assigned to current user
+      });
+
+      if (!report) {
+        return res.status(404).json({ msg: "Report not found or unauthorized" });
+      }
+
+      report.resolved = "attempted";
+      report.priority = "high";
+      await report.save();
+
+      res.json({
+        msg: "Report marked as attempted",
+        report: {
+          id: report._id,
+          priority: report.priority,
+          status: report.resolved,
+        },
+      });
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send("Server Error");
+    }
+  }
+);
+
+
+router.get(
+  "/admin/reports/attempted",
+  auth,
+  async (req, res) => {
+    try {
+      const attemptedReports = await Report.find({
+        resolved: "attempted",
+        priority: "high",
+      })
+        .sort({
+          priority: -1, // High priority first
+          createdAt: -1, // Newest first
+        })
+
+      res.json({
+        count: attemptedReports.length,
+        reports: attemptedReports.map(report => ({
+          id: report._id,
+          subcity: report.subcity,
+          category: report.category,
+          priority: report.priority,
+          assignedTo: report.assignedTo,
+          createdAt: report.createdAt,
+        })),
+      });
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send("Server Error");
+    }
+  }
+);
+
+
+/*
+
+router.patch("/maintenance/assign/:report_id", auth, async (req, res) => {
+  const { report_id } = req.params;
+
+  try {
+    // Fetch the report
+    const report = await Report.findById(report_id);
+    if (!report) {
+      return res.status(404).json({ msg: "Report not found" });
+    }
+    // Extract the report's location from metadata
+    const reportLocation = report.metadata.location; // Ensure this is in GeoJSON format: { type: "Point", coordinates: [longitude, latitude] }
+    // Find the closest available worker within the same subcity
+    const closestWorker = await User.findOne({
+      subCity: report.subcity,
+      maintainerAvailable: true,
+      currentLocation: {
+        $near: {
+          $geometry: reportLocation,
+          $maxDistance: 10000, // Maximum distance in meters (adjust as needed)
+        },
+      },
+    });
+    if (!closestWorker) {
+      return res.status(404).json({ msg: "No maintenance worker available nearby" });
+    }
+    // Assign the worker to the report
+    report.assignedTo = closestWorker._id;
+    await report.save();
+    console.log(`Report assigned to user: ${closestWorker.name}`);
+    res.status(200).json({ msg: "Report assigned successfully", worker: closestWorker.name });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ msg: "Server Error", error: err.message });
+  }
+});
+*/
 module.exports = router;

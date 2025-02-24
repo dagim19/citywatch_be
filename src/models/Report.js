@@ -61,7 +61,12 @@ const ReportSchema = new mongoose.Schema({
   resolved: {
     type: String,
     enum: ["waiting", "inProgress", "attempted", "resolved"],
-    default: "false",
+    default: "waiting",
+  },
+  priority: {
+    type: String,
+    enum: ["normal", "high"],
+    default: "normal",
   },
   metadata: {
     type: Object,
