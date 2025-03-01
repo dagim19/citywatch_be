@@ -7,6 +7,8 @@ const reportsRoutes = require('./src/routes/reports');
 const announcementsRoutes = require('./src/routes/announcements');
 const aboutRoutes = require('./src/routes/about');
 const auhMiddleware = require('./src/middleware/auth');
+const statusMonitor = require('express-status-monitor');
+
 // const announcementsRoutes = require('./src/routes/announcements');
 // const messagesRoutes = require('./src/routes/messages');
 // cors setup
@@ -25,6 +27,9 @@ connectDB();
 //     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow these HTTP methods
 //     credentials: true, // Allow cookies and credentials (if needed)
 // }));
+
+// app.use(expressDebug(app, { depth: 3 }));
+app.use(statusMonitor());
 
 app.use(cors({
     origin: '*',

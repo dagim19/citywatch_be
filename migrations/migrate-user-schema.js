@@ -5,23 +5,18 @@ require('dotenv').config();
 
 async function migrateUsers() {
   try {
-    await mongoose.connect(process.env.MONGODB_URI);
+    await mongoose.connect("mongodb+srv://dagim:1HFtVkWxPzxebS7k@cluster0.mshyo.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0");
 
-    // 1. Rename subcity to subCity
-    await User.updateMany(
-      {},
-      { $rename: { "subcity": "subCity" } },
-      { multi: true }
-    );
 
     // 2. Add new fields with default values
     await User.updateMany(
       {},
       {
         $set: {
-          institution: null,
-          currentLocation: null,
-          maintainerAvailable: false
+          // institution: null,
+          // currentLocation: null,
+          // maintainerAvailable: false
+          reportsSupported: []
         }
       },
       { multi: true }

@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt'); // For password hashing
 const router = express.Router();
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
-const admin = require('./firebase');
+// const admin = require('./firebase');
 const { sendOTPEmail } = require('./emailService'); // Import the sendOTPEmail function
 const { sendOTPSMS } = require('./smsService');
 // Forgot Password Route

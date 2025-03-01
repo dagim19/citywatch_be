@@ -18,6 +18,9 @@ const userSchema = new mongoose.Schema(
   resetOtpVerified: { type: Boolean, default: false },
     //we'll use this to check which verifier is closest to the reported issue
     // Add other fields as needed (e.g., date of birth, address, etc.)
+  
+    // reports supported a hash set of reports that the user has reported
+    reportsSupported: [{ type: mongoose.Schema.Types.ObjectId, ref: "Report" }],
   },
   { timestamps: true }
 ); // Add timestamps for createdAt and updatedAt

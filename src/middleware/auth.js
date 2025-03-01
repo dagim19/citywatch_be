@@ -43,6 +43,7 @@ const auth = async (req, res, next) => {
     // 4. Attach the user object to the request for use in other routes
     req.user = user;
 
+    console.log('Job done...')
     // 5. Proceed to the next middleware or route handler
     next();
   } catch (error) {

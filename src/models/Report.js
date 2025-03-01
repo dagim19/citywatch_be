@@ -59,7 +59,7 @@ const ReportSchema = new mongoose.Schema({
     enum: ["waiting", "inProgress", "attempted", "resolved"],
     default: "waiting",
   },
-  supporters: [{ type: mongoose.Schema.Types.ObjectId }],
+  supporters: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   metadata: {
     type: Object,
     required: false,
