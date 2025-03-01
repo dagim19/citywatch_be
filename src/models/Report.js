@@ -59,10 +59,13 @@ const ReportSchema = new mongoose.Schema({
     enum: ["waiting", "inProgress", "attempted", "resolved"],
     default: "waiting",
   },
+  supporters: [{ type: mongoose.Schema.Types.ObjectId }],
   metadata: {
     type: Object,
-    required: true,
+    required: false,
   }, // contains location data
   // Add more fields as needed
 });
+ReportSchema.index({ supporters: 1 });
 module.exports = mongoose.model("Report", ReportSchema);
+

@@ -4,35 +4,9 @@ const router = express.Router();
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const admin = require('./firebase');
-
-// Verify OTP Endpoint
-router.post('/verify-otp', async (req, res) => {
-  const { email, phone, otp } = req.body;
-
-  let user = null;
-  if (email) {
-    user = await User.findOne({ email });
-  } else if (phone) {
-    user = await User.findOne({ phone });
-  }
-
-  if (!user) {
-    return res.status(404).json({ message: 'User not found' });
-  }
-
-  // Compare the provided OTP with the stored OTP and check expiry
-  if (user.resetOtp !== parseInt(otp) || new Date() > new Date(user.resetOtpExpiry)) {
-    return res.status(400).json({ message: 'Invalid or expired OTP' });
-  }
-
-  // Optionally, mark OTP as verified (you can also clear it here or create a temporary token)
-  user.resetOtpVerified = true;
-  await user.save();
-
-  return res.json({ message: 'OTP verified successfully' });
-});
-
-// Request password reset via SMS or email
+const { sendOTPEmail } = require('./emailService'); // Import the sendOTPEmail function
+const { sendOTPSMS } = require('./smsService');
+// Forgot Password Route
 router.post('/forgot-password', async (req, res) => {
   const { email, phone } = req.body;
 
@@ -61,20 +35,54 @@ router.post('/forgot-password', async (req, res) => {
   user.resetOtpExpiry = expiry;
   await user.save();
 
-  // Send OTP via Firebase
+  // Send OTP via email or SMS
   try {
-    if (phone) {
-      await admin.auth().getUserByPhoneNumber(phone); // Ensure phone exists in Firebase
-      // Firebase Phone Auth sends OTP automatically when logging in, so no need to send it manually.
-    } else if (email) {
-      // Send email using Firebase (or any email service like Nodemailer)
-      console.log(`OTP sent to ${email}: ${otp}`);
+    if (email) {
+      const emailSent = await sendOTPEmail(email, otp); // Use the imported function
+      if (!emailSent) {
+        return res.status(500).json({ message: 'Error sending OTP via email' });
+      }
+    } else if (phone) {
+      const smsSent = await sendOTPSMS(phone, otp); // Use the sendOTPSMS function
+      if (!smsSent) {
+        return res.status(500).json({ message: 'Error sending OTP via SMS' });
+      }
     }
+
     res.json({ message: 'OTP sent successfully' });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: 'Error sending OTP', error });
   }
 });
+// Verify OTP Endpoint
+router.post('/verify-otp', async (req, res) => {
+  const { email, phone, otp } = req.body;
+
+  let user = null;
+  if (email) {
+    user = await User.findOne({ email });
+  } else if (phone) {
+    user = await User.findOne({ phone });
+  }
+
+  if (!user) {
+    return res.status(404).json({ message: 'User not found' });
+  }
+
+  // Compare the provided OTP with the stored OTP and check expiry
+  if (user.resetOtp !== parseInt(otp) || new Date() > new Date(user.resetOtpExpiry)) {
+    return res.status(400).json({ message: 'Invalid or expired OTP' });
+  }
+
+  // Optionally, mark OTP as verified (you can also clear it here or create a temporary token)
+  user.resetOtpVerified = true;
+  await user.save();
+
+  return res.json({ message: 'OTP verified successfully' });
+});
+
+
 
 // Verify OTP and reset password
 router.post('/reset-password', async (req, res) => {

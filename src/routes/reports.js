@@ -6,7 +6,8 @@ const Report = require("../models/Report"); // Assuming you have a Report model
 const User = require("../models/User"); // Assuming you have a User model
 const router = express.Router();
 const upload = require("../config/storage");
-
+const mongoose = require("mongoose");
+const ObjectId = mongoose.Types.ObjectId;
 router.post(
   "/",
   auth,
@@ -23,6 +24,8 @@ router.post(
       const imageUrls = req.files.map(
         (file) => `http://localhost/images/${file.filename}`
       );
+      console.log("Received metadata:", metadata);
+
   
       // Create a new report document
       const report = new Report({
@@ -281,6 +284,143 @@ router.post('/:id/comment', auth, async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 });
+router.get('/road/locations', auth, async (req, res) => {
+  try {
+    // Fetch road-related issues that are verified and not resolved
+    const roadReports = await Report.find({
+      category: "2", // Assuming "2" is the category for road issues
+      status: "verified",
+      resolved: false,
+    }).select('metadata'); // Only fetch the metadata field which contains location data
+
+    // Extract latitude and longitude from metadata
+    const locations = roadReports.map(report => ({
+      latitude: report.metadata.latitude,
+      longitude: report.metadata.longitude,
+      title: 'Road Issue', // You can customize this based on your data
+      description: 'Reported road issue', // You can customize this based on your data
+      icon: 'road-variant', // Icon for road issues
+    }));
+
+    res.status(200).json(locations);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ msg: "Server Error", error: err.message });
+  }
+});
+router.post("/support/:id", auth, async (req, res) => {
+  try {
+    const report = await Report.findById(req.params.id);
+    if (!report) {
+      return res.status(404).json({ msg: "Report not found" });
+    }
+
+    const userId = req.user.id;
+    const alreadySupported = report.supporters.includes(userId);
+
+    if (alreadySupported) {
+      // Remove user from supporters array (unsupport)
+      report.supporters = report.supporters.filter(id => id.toString() !== userId);
+    } else {
+      // Add user to supporters array (support)
+      report.supporters.push(userId);
+    }
+
+    await report.save();
+    res.status(200).json({ success: true, supporters: report.supporters.length });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ msg: "Server Error" });
+  }
+});
+router.post('/support', auth, async (req, res) => {
+  try {
+    const { reportId } = req.body; // Get reportId from the request body
+    if (!reportId) {
+      return res.status(400).json({ msg: 'Report ID is required' });
+    }
+
+    const report = await Report.findById(reportId); // Find the report by ID
+    if (!report) {
+      return res.status(404).json({ msg: 'Report not found' });
+    }
+
+    const userId = req.user.id; // Get the user ID from the authenticated user
+
+    // Check if the user has already supported the report
+    if (report.supporters.includes(userId)) {
+      return res.status(400).json({ msg: 'You have already supported this report' });
+    }
+
+    // Add the user to the supporters array
+    report.supporters.push(userId);
+    await report.save();
+
+    // Return success response with updated supporters count
+    res.status(200).json({ 
+      msg: 'Report supported successfully', 
+      supportersCount: report.supporters.length 
+    });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: error.message }); // Ensure JSON response
+  }
+});
+router.post('/unsupport', auth, async (req, res) => {
+  try {
+    const { reportId } = req.body; // Get reportId from the request body
+    if (!reportId) {
+      return res.status(400).json({ msg: 'Report ID is required' });
+    }
+
+    const report = await Report.findById(reportId); // Find the report by ID
+    if (!report) {
+      return res.status(404).json({ msg: 'Report not found' });
+    }
+
+    const userId = req.user.id; // Get the user ID from the authenticated user
+
+    // Check if the user has supported the report
+    if (!report.supporters.includes(userId)) {
+      return res.status(400).json({ msg: 'You have not supported this report' });
+    }
+
+    // Remove the user from the supporters array
+    report.supporters = report.supporters.filter((id) => id.toString() !== userId.toString());
+    await report.save();
+
+    // Return success response with updated supporters count
+    res.status(200).json({ 
+      msg: 'Report unsupported successfully', 
+      supportersCount: report.supporters.length 
+    });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: error.message }); // Ensure JSON response
+  }
+});
+//const { ObjectId } = require('mongoose').Types;
+
+
+router.get("/supported", auth, async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    // Ensure userId is a valid ObjectId
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ msg: "Invalid user ID" });
+    }
+
+    const supportedReports = await Report.find({ supporters: new mongoose.Types.ObjectId(userId) })
+      .sort({ createdAt: -1 });
+
+    res.status(200).json(supportedReports);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ msg: "Server Error" });
+  }
+});
+
 
 
 module.exports = router;
