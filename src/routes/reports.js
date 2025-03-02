@@ -145,33 +145,7 @@ router.patch("/verifier/verify/:report_Id", auth, async (req, res) => {
     res.status(500).json({ msg: "Server Error", error: err.message });
   }
 });
-// assigning to maintenance
-router.patch("/maintenance/assign/:report_Id", auth, async (req, res) => {
-  try {
-    const { reportId } = req.params;
-    const report = await Report.findById(reportId);
-    if (!report) {
-      throw new Error("Report not found");
-    }
 
-    const availableUser = await User.findOne({
-      subCity: report.subcity,
-      maintainerAvailable: true,
-    });
-
-    if (!availableUser) {
-      throw new Error("No maintenance worker available");
-    }
-
-    report.assignedTo = availableUser._id;
-    await report.save();
-
-    console.log(`Report assigned to user: ${availableUser.name}`);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).json({ msg: "Server Error", error: err.message });
-  }
-});
 
 router.patch(
   "/reports/:report_id/attempted",
@@ -240,7 +214,7 @@ router.get(
 );
 
 
-/*
+//an admin route to assign a maintenance worker
 
 router.patch("/maintenance/assign/:report_id", auth, async (req, res) => {
   const { report_id } = req.params;
@@ -260,7 +234,9 @@ router.patch("/maintenance/assign/:report_id", auth, async (req, res) => {
       currentLocation: {
         $near: {
           $geometry: reportLocation,
-          $maxDistance: 10000, // Maximum distance in meters (adjust as needed)
+          $maxDistance: 10000, 
+          // we can add a max distance but probably not necessary since we are only assigning to maintenace employees from within the same sub city as the report
+          
         },
       },
     });
@@ -277,5 +253,4 @@ router.patch("/maintenance/assign/:report_id", auth, async (req, res) => {
     res.status(500).json({ msg: "Server Error", error: err.message });
   }
 });
-*/
 module.exports = router;
