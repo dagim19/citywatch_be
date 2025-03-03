@@ -9,9 +9,11 @@ const ReportSchema = new mongoose.Schema({
   subcity: {
     type: String,
     required: true,
+    lowercase: true, 
+
   },
   category: {
-    type: String,
+    type: Number,
     required: true,
   },
   images: {
@@ -58,6 +60,11 @@ const ReportSchema = new mongoose.Schema({
     type: String,
     enum: ["waiting", "inProgress", "attempted", "resolved"],
     default: "waiting",
+  },
+  priority: {
+    type: String,
+    enum: ["normal", "high"],
+    default: "normal",
   },
   supporters: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   metadata: {
