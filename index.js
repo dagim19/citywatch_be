@@ -6,6 +6,7 @@ const authRoutes = require('./src/routes/auth');
 const reportsRoutes = require('./src/routes/reports');
 const announcementsRoutes = require('./src/routes/announcements');
 const aboutRoutes = require('./src/routes/about');
+const messagesRoutes = require("./src/routes/messageRoutes");
 const auhMiddleware = require('./src/middleware/auth');
 const statusMonitor = require('express-status-monitor');
 
@@ -38,11 +39,13 @@ app.use(express.json({ extended: false }));
 
 
 // Define Routes
+// app.use('/api', messagesRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/reports', reportsRoutes);
 app.use('/api/about', aboutRoutes);
 app.use('/api/announcements', announcementsRoutes);
-// app.use('/api/messages', messagesRoutes);
+
+
 
 app.use((req, res, next) => {
     res.status(404).json({

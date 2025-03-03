@@ -34,7 +34,7 @@ const auth = async (req, res, next) => {
 
     // 3. Find the user based on the decoded token's ID
     const user = await User.findById(decoded.userId);
-    console.log('User:', user);
+    
 
     if (!user) {
       return res.status(401).json({ message: 'User not found' });
@@ -43,7 +43,6 @@ const auth = async (req, res, next) => {
     // 4. Attach the user object to the request for use in other routes
     req.user = user;
 
-    console.log('Job done...')
     // 5. Proceed to the next middleware or route handler
     next();
   } catch (error) {
