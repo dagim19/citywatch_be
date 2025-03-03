@@ -389,28 +389,21 @@ router.post('/:id/comment', auth, async (req, res) => {
 });
 router.get('/road/locations', auth, async (req, res) => {
   try {
-    // Fetch road-related issues that are verified and not resolved
     const roadReports = await Report.find({
-      category: "2", // Assuming "2" is the category for road issues
-      status: "verified",
-      resolved: false,
-    }).select('metadata'); // Only fetch the metadata field which contains location data
+      category: 2, // Ensure category is a number, not a string
+    }).sort({ createdAt: -1 });
 
-    // Extract latitude and longitude from metadata
-    const locations = roadReports.map(report => ({
-      latitude: report.metadata.latitude,
-      longitude: report.metadata.longitude,
-      title: 'Road Issue', // You can customize this based on your data
-      description: 'Reported road issue', // You can customize this based on your data
-      icon: 'road-variant', // Icon for road issues
-    }));
+    if (!roadReports.length) {
+      return res.status(404).json({ msg: 'No road reports found' });
+    }
 
-    res.status(200).json(locations);
+    res.status(200).json(roadReports);
   } catch (err) {
-    console.error(err.message);
-    res.status(500).json({ msg: "Server Error", error: err.message });
+    console.error('Error fetching road reports:', err.message);
+    res.status(500).json({ msg: 'Server Error', error: err.message });
   }
 });
+
 
 
 router.get("/supported", auth, async (req, res) => {
