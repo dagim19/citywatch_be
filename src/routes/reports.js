@@ -62,6 +62,66 @@ router.post(
   }
 );
 
+const haversineDistance = (coords1, coords2) => {
+  const toRad = (value) => (value * Math.PI) / 180;
+  const R = 6371; // Radius of Earth in km
+  const dLat = toRad(coords2.latitude - coords1.latitude);
+  const dLon = toRad(coords2.longitude - coords1.longitude);
+  const lat1 = toRad(coords1.latitude);
+  const lat2 = toRad(coords2.latitude);
+
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1) *
+      Math.cos(lat2) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c; // Distance in km
+};
+
+router.post("/checkSubmission", auth, async (req, res) => {
+  try {
+    const { location } = req.body; // Expecting { latitude, longitude, category }
+
+    if (!location || !location.latitude || !location.longitude || !location.category) {
+      return res.status(400).json({ msg: "Invalid location data" });
+    }
+
+    console.log("Received location:", location);
+
+    // Find reports in the same subcity and category
+    const reports = await Report.find({
+      subcity: req.user.subcity,
+      category: location.category,
+      "metadata.location": { $exists: true }
+    });
+
+    if (reports.length === 0) {
+      return res.json({ nearestReport: null }); // No reports found
+    }
+
+    // Calculate distances and sort by distance (asc), then by createdAt (asc)
+    const sortedReports = reports
+      .map(report => ({
+        report,
+        distance: haversineDistance(location, report.metadata.location)
+      }))
+      .filter(item => item.distance <= 1) // Keep only reports within 1km
+      .sort((a, b) => a.distance - b.distance || a.report.createdAt - b.report.createdAt);
+
+    // Send only the nearest report (if any exist within 1km)
+    const nearestReport = sortedReports.length > 0 ? sortedReports[0].report : null;
+    
+    res.json({ nearestReport });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: "Server error" });
+  }
+});
+
+
 
 router.get("/", auth, async (req, res) => {
   try {
