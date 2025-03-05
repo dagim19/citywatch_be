@@ -11,14 +11,14 @@ const userSchema = new mongoose.Schema(
     role: { type: String, default: "user" },
     password: { type: String, required: true }, // Store hashed passwords
     institution: { type: String, required: false },
-    currentLocation:{type:Object, required: false},
-    maintainerAvailable:{type:Boolean, required: false},
+    currentLocation: { type: Object, required: false },
+    maintainerAvailable: { type: Boolean, required: false },
     resetOtp: { type: Number, default: null },
-  resetOtpExpiry: { type: Date, default: null },
-  resetOtpVerified: { type: Boolean, default: false },
+    resetOtpExpiry: { type: Date, default: null },
+    resetOtpVerified: { type: Boolean, default: false },
     //we'll use this to check which verifier is closest to the reported issue
     // Add other fields as needed (e.g., date of birth, address, etc.)
-  
+
     // reports supported a hash set of reports that the user has reported
     reportsSupported: [{ type: mongoose.Schema.Types.ObjectId, ref: "Report" }],
   },

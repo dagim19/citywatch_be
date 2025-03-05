@@ -1,49 +1,49 @@
-// server.js
+// module imports
 const express = require('express');
-
 const connectDB = require('./src/config/database');
-const authRoutes = require('./src/routes/auth');
+
+// user module route imports
+const userAuth = require('./src/routes/userRoutes/auth');
+const userAboutRoutes = require('./src/routes/userRoutes/about');
+const userAnnouncementsRoutes = require('./src/routes/userRoutes/announcements');
+const userReportsRoutes = require('./src/routes/userRoutes/reports');
+
+// dashboard module route imports
+const dashboardAuth = require('./src/routes/dashboardRoutes/auth');
 const reportsRoutes = require('./src/routes/reports');
-const announcementsRoutes = require('./src/routes/announcements');
-const aboutRoutes = require('./src/routes/about');
 const messagesRoutes = require("./src/routes/messageRoutes");
 const auhMiddleware = require('./src/middleware/auth');
 const statusMonitor = require('express-status-monitor');
 
-// const announcementsRoutes = require('./src/routes/announcements');
-// const messagesRoutes = require('./src/routes/messages');
-// cors setup
-const cors = require('cors');
 
+const cors = require('cors');
 const app = express();
 
-
+// dotenv configuration
 require('dotenv').config();
+
+
 // Connect Database
 connectDB();
-
-// Init Middleware
-// app.use(cors({
-//     origin: '*',
-//     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow these HTTP methods
-//     credentials: true, // Allow cookies and credentials (if needed)
-// }));
-
-// app.use(expressDebug(app, { depth: 3 }));
 app.use(statusMonitor());
 
+// cors setup
 app.use(cors({
     origin: '*',
 }));
 app.use(express.json({ extended: false }));
 
 
-// Define Routes
-// app.use('/api', messagesRoutes);
-app.use('/api/auth', authRoutes);
+// user module routes
+app.use('/api/user/auth', userAuth);
+app.use('/api/user/about', userAboutRoutes);
+app.use('/api/user/announcements', userAnnouncementsRoutes);
+app.use('/api/user/reports', userReportsRoutes);
+
+// dashboard module routes
+app.use('/api/dashboard/auth', dashboardAuth);
+
 app.use('/api/reports', reportsRoutes);
-app.use('/api/about', aboutRoutes);
-app.use('/api/announcements', announcementsRoutes);
 
 
 

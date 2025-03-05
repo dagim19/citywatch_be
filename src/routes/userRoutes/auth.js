@@ -1,11 +1,11 @@
 const express = require('express');
 const bcrypt = require('bcrypt'); // For password hashing
 const router = express.Router();
-const User = require('../models/User');
+const User = require('../../models/User');
 const jwt = require('jsonwebtoken');
 // const admin = require('./firebase');
-const { sendOTPEmail } = require('./emailService'); // Import the sendOTPEmail function
-const { sendOTPSMS } = require('./smsService');
+const { sendOTPEmail } = require('../emailService'); // Import the sendOTPEmail function
+const { sendOTPSMS } = require('../smsService');
 // Forgot Password Route
 router.post('/forgot-password', async (req, res) => {
   const { email, phone } = req.body;
