@@ -10,7 +10,7 @@ const userReportsRoutes = require('./src/routes/userRoutes/reports');
 
 // dashboard module route imports
 const dashboardAuth = require('./src/routes/dashboardRoutes/auth');
-const reportsRoutes = require('./src/routes/reports');
+const dashboardReportsRoutes = require('./src/routes/dashboardRoutes/reports');
 const messagesRoutes = require("./src/routes/messageRoutes");
 const auhMiddleware = require('./src/middleware/auth');
 const statusMonitor = require('express-status-monitor');
@@ -42,8 +42,7 @@ app.use('/api/user/reports', userReportsRoutes);
 
 // dashboard module routes
 app.use('/api/dashboard/auth', dashboardAuth);
-
-app.use('/api/reports', reportsRoutes);
+app.use('/api/dashboard/reports', dashboardReportsRoutes);
 
 
 
