@@ -1,7 +1,7 @@
 // module imports
 const express = require('express');
 const connectDB = require('./src/config/database');
-
+const verifierReportsRoutes = require('./src/routes/verifierRoutes/reports');
 // user module route imports
 const userAuth = require('./src/routes/userRoutes/auth');
 const userAboutRoutes = require('./src/routes/userRoutes/about');
@@ -12,7 +12,7 @@ const userReportsRoutes = require('./src/routes/userRoutes/reports');
 const dashboardAuth = require('./src/routes/dashboardRoutes/auth');
 const dashboardReportsRoutes = require('./src/routes/dashboardRoutes/reports');
 const messagesRoutes = require("./src/routes/messageRoutes");
-const auhMiddleware = require('./src/middleware/auth');
+//const auhMiddleware = require('./src/middleware/auth');
 const statusMonitor = require('express-status-monitor');
 
 
@@ -44,6 +44,7 @@ app.use('/api/user/reports', userReportsRoutes);
 app.use('/api/dashboard/auth', dashboardAuth);
 app.use('/api/dashboard/reports', dashboardReportsRoutes);
 
+app.use('/api/verifier/reports', verifierReportsRoutes);
 
 
 app.use((req, res, next) => {
