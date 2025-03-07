@@ -86,7 +86,7 @@ app.use('/api/dashboard/reports', dashboardReportsRoutes);
 app.use('/api/dashboard/announcements', dashboardAnnouncementsRoutes);
 
 app.use('/api/verifier/reports', verifierReportsRoutes);
-app.use('/api/cs/reports', csRoutes);
+// app.use('/api/cs/reports', csRoutes);
 
 app.use((req, res, next) => {
   res.status(404).json({
