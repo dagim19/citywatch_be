@@ -11,6 +11,7 @@ admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
   });
 
+const csRoutes = require('./src/routes/csRoutes/reports');
 // user module route imports
 const userAuth = require('./src/routes/userRoutes/auth');
 const userAboutRoutes = require('./src/routes/userRoutes/about');
@@ -85,7 +86,7 @@ app.use('/api/dashboard/reports', dashboardReportsRoutes);
 app.use('/api/dashboard/announcements', dashboardAnnouncementsRoutes);
 
 app.use('/api/verifier/reports', verifierReportsRoutes);
-
+app.use('/api/cs/reports', csRoutes);
 
 app.use((req, res, next) => {
     res.status(404).json({
