@@ -15,13 +15,13 @@ router.post("/", auth, async (req, res) => {
     let source = 1;
     switch (institution) {
         case 'elpa':
-            source = 1;
+            source = 0;
             break;
         case 'aaca':
             source = 2;
             break;
         case 'aawsa':
-            source = 3;
+            source = 1;
             break;
     }
 

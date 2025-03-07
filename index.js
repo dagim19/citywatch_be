@@ -12,7 +12,6 @@ admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
   });
 
-const csRoutes = require('./src/routes/csRoutes/reports');
 // user module route imports
 const userAuth = require('./src/routes/userRoutes/auth');
 const userAboutRoutes = require('./src/routes/userRoutes/about');
