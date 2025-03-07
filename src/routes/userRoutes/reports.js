@@ -5,7 +5,25 @@ const Report = require("../../models/Report");
 const User = require("../../models/User");
 const router = express.Router();
 const upload = require("../../config/storage");
+const NotificationService = require("../../services/notificationService");
 
+const haversineDistance = (coords1, coords2) => {
+    const toRad = (value) => (value * Math.PI) / 180;
+    const R = 6371; // Radius of Earth in km
+    const dLat = toRad(coords2.latitude - coords1.latitude);
+    const dLon = toRad(coords2.longitude - coords1.longitude);
+    const lat1 = toRad(coords1.latitude);
+    const lat2 = toRad(coords2.latitude);
+  
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1) *
+        Math.cos(lat2) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c; // Distance in km
+  };
 
 router.post(
     "/",
@@ -16,10 +34,7 @@ router.post(
             const { category, duration, description, metadata } = req.body;
             const user_id = req.user.id;
             const subcity = req.user.subcity;
-            console.log('Reporter: ', req.user);
-            // Get the file paths of uploaded images
-            console.log("subcity: ", subcity);
-            console.log('Request Recieved: ', req.body);
+            
             const imageUrls = req.files.map(
                 (file) => `http://localhost/images/${file.filename}`
             );
@@ -37,8 +52,11 @@ router.post(
                 images: imageUrls,
             });
 
+
             // console.log(report);
             await report.save();
+
+            NotificationService.notifyNewReportForVerifier(report);
 
             // send sucess message
             res.status(201).json({
@@ -347,6 +365,7 @@ router.get("/:reportId/messages", auth, async (req, res) => {
 // Send a new message
 router.post("/:reportId/messages", auth, async (req, res) => {
     try {
+        console.log('Recieved message: ', req.body);
         const { message } = req.body;
         const reportId = req.params.reportId;
 

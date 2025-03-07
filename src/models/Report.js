@@ -9,8 +9,6 @@ const ReportSchema = new mongoose.Schema({
   subcity: {
     type: String,
     required: true,
-    lowercase: true, 
-
   },
   category: {
     type: Number,
@@ -49,7 +47,7 @@ const ReportSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ["pending", "verified"],
+    enum: ["pending", "verified","rejected"],
     default: "pending",
   },
   issueType: {
