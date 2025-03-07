@@ -3,7 +3,7 @@ require('dotenv').config();
 
 const connectToAtlas = async () => {
   try {
-    const connectionLink = process.env.MONGODB_URI;
+    const connectionLink = `mongodb+srv://${process.env.ATLAS_USER_NAME}:${process.env.ATLAS_PASSWORD}@cluster0.mshyo.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0/CityWatchDB`
     await mongoose.connect(connectionLink);
   } catch (err) {
     // pass the error to the caller
