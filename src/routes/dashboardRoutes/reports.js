@@ -16,5 +16,16 @@ router.get("/", async (req, res) => {
         res.status(500).send('Server Error');
     }
 });
+router.get("/getReport/:userId", async (req, res) => {
+    console.log("in the function ")
+    try {
+      const { userId } = req.params;
+      const reports = await Report.find({ assignedTo: userId });
+      res.status(200).json(reports); // Always returns an array
+    } catch (error) {
+      console.error("Error fetching assigned reports:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
 
 module.exports = router;
