@@ -9,8 +9,6 @@ const ReportSchema = new mongoose.Schema({
   subcity: {
     type: String,
     required: true,
-    lowercase: true, 
-
   },
   category: {
     type: Number,

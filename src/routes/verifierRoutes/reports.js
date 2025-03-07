@@ -8,7 +8,11 @@ const User = require("../../models/User");
 const router = express.Router();
 const upload = require("../../config/storage");
 const mongoose = require("mongoose");
+const NotificationService = require("../../services/notificationService");
+
 const ObjectId = mongoose.Types.ObjectId;
+
+
 router.get("/getVerified", auth, async (req, res) => {
     try {
         console.log("Received request for pending reports");
@@ -81,6 +85,8 @@ router.patch("/verify", auth, async (req, res) => {
   
       // Save the updated report
       await report.save();
+
+      NotificationService.notifyReportChange(report);
   
       // Return success response with updated report data
       res.status(200).json({
