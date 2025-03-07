@@ -2,6 +2,7 @@
 const express = require('express');
 const connectDB = require('./src/config/database');
 const verifierReportsRoutes = require('./src/routes/verifierRoutes/reports');
+const csRoutes = require('./src/routes/csRoutes/reports');
 // user module route imports
 const userAuth = require('./src/routes/userRoutes/auth');
 const userAboutRoutes = require('./src/routes/userRoutes/about');
@@ -45,7 +46,7 @@ app.use('/api/dashboard/auth', dashboardAuth);
 app.use('/api/dashboard/reports', dashboardReportsRoutes);
 
 app.use('/api/verifier/reports', verifierReportsRoutes);
-
+app.use('/api/cs/reports', csRoutes);
 
 app.use((req, res, next) => {
     res.status(404).json({
@@ -58,9 +59,4 @@ app.use((req, res, next) => {
 
 // set port 
 const PORT = process.env.PORT || 5000;
-const IP = '0.0.0.0';
-;
-// app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server is running on http://${IP}:5000`);
-  });
+app.listen(PORT, () => console.log("Server started on port ${PORT}"));
