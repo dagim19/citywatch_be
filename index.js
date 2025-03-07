@@ -58,7 +58,8 @@ app.use((req, res, next) => {
 
 // set port 
 const PORT = process.env.PORT || 5000;
-const IP = '192.168.1.7';
+const IP = '0.0.0.0';
+;
 // app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server is running on http://${IP}:5000`);
