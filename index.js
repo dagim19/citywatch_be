@@ -2,6 +2,7 @@
 const express = require('express');
 const connectDB = require('./src/config/database');
 const verifierReportsRoutes = require('./src/routes/verifierRoutes/reports');
+const csRoutes = require('./src/routes/csRoutes/reports');
 const http = require('http');
 const socketIo = require('socket.io');
 const admin = require('firebase-admin');

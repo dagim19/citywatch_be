@@ -14,6 +14,7 @@ const ObjectId = mongoose.Types.ObjectId;
 
 
 
+
 router.get("/getVerified", auth, async (req, res) => {
     try {
         console.log("Received request for pending reports");
@@ -26,11 +27,7 @@ router.get("/getVerified", auth, async (req, res) => {
         }
 
         // 🔹 Fetch reports for the user's subcity
-       const verifiedReports = await Report.find({ 
-  status: { $in: ["verified", "rejected"] }, 
-  verifiedBy: user.id 
-}).sort({ createdAt: 1 });
-
+        const verifiedReports = await Report.find({ status: "verified"||"rejected", verifiedBy: user.id}).sort({ createdAt: 1 });
 
         console.log("Fetched pending reports:", verifiedReports.length);
         res.status(200).json(verifiedReports);
